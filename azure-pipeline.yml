@@ -1,8 +1,13 @@
 trigger:
 - main
+- develop
+- release/staging
+
+pr:
+- main
 
 pool:
-  vmImage: $VIRTUALMACHINE
+  vmImage: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -25,13 +30,36 @@ stages:
       artifact: 'myExpressApp'
       displayName: 'Publish Artifact'
 
-
-- stage: Deploy
-  displayName: 'Deploy stage'
-  dependsOn: Build 
+- stage: DeployDev
+  displayName: 'Deploy to Dev'
+  dependsOn: Build
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/develop')
   jobs:
-  - job: Deploy
-    displayName: 'Deploy job'
+  - job: DeployDev
+    displayName: 'Deploy to Dev job'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'myExpressApp'
+          downloadPath: '$(System.DefaultWorkingDirectory)'    
+    - task: AzureWebApp@1
+      inputs:
+           azureSubscription: '$(azureSubscription)'
+           appName: '$(devappname)'
+           package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+           runtimeStack: 'NODE|14-lts'
+           startUpCommand: 'npm start'
+      displayName: 'Deploy to Dev Environment'
+
+- stage: DeployStaging
+  displayName: 'Deploy to Staging'
+  dependsOn: Build
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/release/staging')
+  jobs:
+  - job: DeployStaging
+    displayName: 'Deploy to Staging job'
     steps:
     - task: DownloadBuildArtifacts@1
       inputs:
@@ -41,9 +69,43 @@ stages:
          downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: 'Azure subscription 1 (b262904d-4540-4dc0-8342-06f643f3a0ea)'
-        appName: 'boomshak'
+        azureSubscription: '$(azureSubscription)'
+        appName: '$(stagingappname)'
         package: '$(System.DefaultWorkingDirectory)/**/*.zip'
         runtimeStack: 'NODE|14-lts'
         startUpCommand: 'npm start'
-      displayName: 'Deploy to Azure App Service'
+      displayName: 'Deploy to Staging Environment'
+
+- stage: DeployProd
+  displayName: 'Deploy to Production'
+  dependsOn: Build
+  condition: or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs:
+  - job: DeployProd
+    displayName: 'Deploy to Production job'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+         buildType: 'current'
+         downloadType: 'single'
+         artifactName: 'myExpressApp'
+         downloadPath: '$(System.DefaultWorkingDirectory)'    
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: '$(azureSubscription)'
+        appName: '$(prodappname)'
+        package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        runtimeStack: 'NODE|14-lts'
+        startUpCommand: 'npm start'
+      displayName: 'Deploy to Production Environment'
+    
+
+
+
+
+
+
+
+
+
+
