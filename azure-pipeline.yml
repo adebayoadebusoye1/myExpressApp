@@ -40,17 +40,17 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@1
       inputs:
-         buildType: 'current'
-         downloadType: 'single'
-         artifactName: 'myExpressApp'
-         downloadPath: '$(System.DefaultWorkingDirectory)'    
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'myExpressApp'
+          downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: 'Azure subscription 1 (b262904d-4540-4dc0-8342-06f643f3a0ea)'
-        appName: 'boomshak-dev'
-        package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-        runtimeStack: 'NODE|14-lts'
-        startUpCommand: 'npm start'
+           azureSubscription: '$(azureSubscription)'
+           appName: '$(devappname)'
+           package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+           runtimeStack: 'NODE|14-lts'
+           startUpCommand: 'npm start'
       displayName: 'Deploy to Dev Environment'
 
 - stage: DeployStaging
@@ -69,8 +69,8 @@ stages:
          downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: 'Azure subscription 1 (b262904d-4540-4dc0-8342-06f643f3a0ea)'
-        appName: 'boomshak-staging'
+        azureSubscription: '$(azureSubscription)'
+        appName: '$(stagingappname)'
         package: '$(System.DefaultWorkingDirectory)/**/*.zip'
         runtimeStack: 'NODE|14-lts'
         startUpCommand: 'npm start'
@@ -92,9 +92,19 @@ stages:
          downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: 'Azure subscription 1 (b262904d-4540-4dc0-8342-06f643f3a0ea)'
-        appName: 'boomshak-prod'
+        azureSubscription: '$(azureSubscription)'
+        appName: '$(prodappname)'
         package: '$(System.DefaultWorkingDirectory)/**/*.zip'
         runtimeStack: 'NODE|14-lts'
         startUpCommand: 'npm start'
       displayName: 'Deploy to Production Environment'
+ 
+
+
+
+
+
+
+
+
+
