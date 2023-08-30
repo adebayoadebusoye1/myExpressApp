@@ -18,7 +18,7 @@ stages:
     steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: '14.x'
+        versionSpec: '16.x'
       displayName: 'Install Node.js'
 
     - script: |
@@ -46,10 +46,10 @@ stages:
           downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-           azureSubscription: '$(azureSubscription)'
+           azureSubscription: theITern-subscription (5135fe87-f70d-43dc-a7d5-ed71c8db7cac)
            appName: '$(devappname)'
            package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-           runtimeStack: 'NODE|14-lts'
+           runtimeStack: 'NODE|16-lts'
            startUpCommand: 'npm start'
       displayName: 'Deploy to Dev Environment'
 
@@ -69,10 +69,10 @@ stages:
          downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: '$(azureSubscription)'
+        azureSubscription: theITern-subscription (5135fe87-f70d-43dc-a7d5-ed71c8db7cac)
         appName: '$(stagingappname)'
         package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-        runtimeStack: 'NODE|14-lts'
+        runtimeStack: 'NODE|16-lts'
         startUpCommand: 'npm start'
       displayName: 'Deploy to Staging Environment'
 
@@ -92,20 +92,10 @@ stages:
          downloadPath: '$(System.DefaultWorkingDirectory)'    
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: '$(azureSubscription)'
+        azureSubscription: theITern-subscription (5135fe87-f70d-43dc-a7d5-ed71c8db7cac)
         appName: '$(prodappname)'
         package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-        runtimeStack: 'NODE|14-lts'
+        runtimeStack: 'NODE|16-lts'
         startUpCommand: 'npm start'
       displayName: 'Deploy to Production Environment'
-    
-
-
-
-
-
-
-
-
-
-
+ 
